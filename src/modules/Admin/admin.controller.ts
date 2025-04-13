@@ -48,7 +48,7 @@ const updatedAdminByid = async (req: Request, res: Response) => {
     const id = req.params.id;
 
     const result = await adminService.updatedAdminByIdFromDb(id, req.body);
-  
+
     res.status(200).json({
       success: true,
       message: "Admin Updated successfully",
@@ -67,16 +67,27 @@ const deleteAdminByid = async (req: Request, res: Response) => {
       message: "Admin deleted successfully",
       data: result,
     });
-    
   } catch (error) {
     handlePrismaError(error, res);
-    
   }
-}
-
+};
+const softDeleteAdminByid = async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const result = await adminService.softDeleteAdminFromDb(id);
+    res.status(200).json({
+      success: true,
+      message: "Admin deleted successfully",
+      data: result,
+    });
+  } catch (error) {
+    handlePrismaError(error, res);
+  }
+};
 export const adminController = {
   getAllAdminFromDB,
   getAdminByid,
   updatedAdminByid,
-  deleteAdminByid
+  deleteAdminByid,
+  softDeleteAdminByid,
 };
