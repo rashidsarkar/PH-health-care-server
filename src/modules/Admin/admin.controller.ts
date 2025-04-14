@@ -1,36 +1,40 @@
 import { PrismaClient } from "@prisma/client";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { adminService } from "./admin.service";
 import { pick } from "../../shared/pick";
 import { adminFilterableFields } from "./admin.const";
 import { handlePrismaError } from "../../utils/handlePrismaError";
 import { sendResponse } from "../../utils/sendResponse";
+import status from "http-status";
 
-const getAllAdminFromDB = async (req: Request, res: Response) => {
+const getAllAdminFromDB = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const filter = pick(req.query, adminFilterableFields);
     const option = pick(req.query, ["limit", "page", "sortBy", "sortOrder"]);
     console.log(option);
     console.log(filter);
     const result = await adminService.getAllAdmin(filter, option);
-    // res.status(200).json({
-    //   success: true,
-    //   message: "Admins retrieved successfully",
-    //   meta: result.meta,
-    //   data: result.data,
-    // });
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admins retrieved successfully",
       meta: result.meta,
       data: result.data,
     });
   } catch (error: any) {
-    handlePrismaError(error, res);
+    // handlePrismaError(error, res);
+    next(error);
   }
 };
-const getAdminByid = async (req: Request, res: Response) => {
+const getAdminByid = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const result = await adminService.getAdminByIdFromDb(id);
@@ -40,16 +44,21 @@ const getAdminByid = async (req: Request, res: Response) => {
     //   data: result,
     // });
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admins retrieved successfully",
       data: result,
     });
   } catch (error) {
-    handlePrismaError(error, res);
+    // handlePrismaError(error, res);
+    next(error);
   }
 };
-const updatedAdminByid = async (req: Request, res: Response) => {
+const updatedAdminByid = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
 
@@ -62,16 +71,21 @@ const updatedAdminByid = async (req: Request, res: Response) => {
     // });
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admins Updated successfully",
       data: result,
     });
   } catch (error) {
-    handlePrismaError(error, res);
+    // handlePrismaError(error, res);
+    next(error);
   }
 };
-const deleteAdminByid = async (req: Request, res: Response) => {
+const deleteAdminByid = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const result = await adminService.deleteAdminFromDb(id);
@@ -82,16 +96,21 @@ const deleteAdminByid = async (req: Request, res: Response) => {
     // });
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin deleted successfully",
       data: result,
     });
   } catch (error) {
-    handlePrismaError(error, res);
+    // handlePrismaError(error, res);
+    next(error);
   }
 };
-const softDeleteAdminByid = async (req: Request, res: Response) => {
+const softDeleteAdminByid = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const id = req.params.id;
     const result = await adminService.softDeleteAdminFromDb(id);
@@ -102,13 +121,14 @@ const softDeleteAdminByid = async (req: Request, res: Response) => {
     // });
 
     sendResponse(res, {
-      statusCode: 200,
+      statusCode: status.OK,
       success: true,
       message: "Admin deleted successfully",
       data: result,
     });
   } catch (error) {
-    handlePrismaError(error, res);
+    // handlePrismaError(error, res);
+    next(error);
   }
 };
 export const adminController = {
