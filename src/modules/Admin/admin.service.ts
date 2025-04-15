@@ -35,7 +35,7 @@ const getAllAdmin = async (
       AND: Object.keys(filterData).map((key) => {
         return {
           [key]: {
-            equals: filterData[key],
+            equals: (filterData as any)[key],
           },
         };
       }),
