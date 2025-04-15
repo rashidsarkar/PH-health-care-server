@@ -5,14 +5,38 @@ import { authService } from "./auth.service";
 
 const loginUser = catchAsync(async (req, res) => {
   const result = await authService.loginUser(req.body);
+  res.cookie("refreshToken", result.refreshToken, {
+    secure: false,
+    httpOnly: true,
+  });
+
+  sendResponse(res, {
+    statusCode: status.OK,
+    success: true,
+    message: "User logged in successfully",
+    data: {
+      accessToken: result.accessToken,
+      needPasswordChange: result.needPasswordChange,
+    },
+  });
+});
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken } = req.cookies;
+  console.log(req.cookies);
+  const result = await authService.refreshToken(refreshToken);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
     message: "User logged in successfully",
     data: result,
+    // data: {
+    //   accessToken: result.accessToken,
+    //   needPasswordChange: result.needPasswordChange,
+    // },
   });
 });
 
 export const authController = {
   loginUser,
+  refreshToken,
 };
