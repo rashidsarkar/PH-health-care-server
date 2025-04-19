@@ -13,7 +13,7 @@ const loginUser = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "User logged in successfully",
+    message: "User logged in successfully from login API",
     data: {
       accessToken: result.accessToken,
       needPasswordChange: result.needPasswordChange,
@@ -22,12 +22,13 @@ const loginUser = catchAsync(async (req, res) => {
 });
 const refreshToken = catchAsync(async (req, res) => {
   const { refreshToken } = req.cookies;
-  console.log(req.cookies);
+  // console.log(req.cookies);
+
   const result = await authService.refreshToken(refreshToken);
   sendResponse(res, {
     statusCode: status.OK,
     success: true,
-    message: "User logged in successfully",
+    message: "User logged in successfully from refresh api",
     data: result,
     // data: {
     //   accessToken: result.accessToken,

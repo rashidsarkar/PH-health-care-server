@@ -3,9 +3,8 @@ import prisma from "../../shared/prisma";
 import { ILoginType } from "./auth.type";
 import { UserStatus } from "@prisma/client";
 import { jwtHelpers } from "../../helpers/jwtHelpers";
-
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET || "abcd";
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "abcde";
+import config from "../../config";
+import { Secret } from "jsonwebtoken";
 
 const loginUser = async (payload: ILoginType) => {
   const userData = await prisma.user.findFirstOrThrow({
@@ -27,13 +26,13 @@ const loginUser = async (payload: ILoginType) => {
 
   const accessToken = jwtHelpers.generateToken(
     tokenPayload,
-    accessTokenSecret,
-    "5m"
+    config.jwt.access_token_secret as Secret,
+    config.jwt.access_token_secret_expires_in as string
   );
   const refreshToken = jwtHelpers.generateToken(
     tokenPayload,
-    refreshTokenSecret,
-    "7d"
+    config.jwt.refresh_token_secret as Secret,
+    config.jwt.refresh_token_expires_in as string
   );
 
   return {
@@ -47,7 +46,11 @@ const refreshToken = async (token: string) => {
   let decodedData;
 
   try {
-    decodedData = jwtHelpers.verifyToken(token, refreshTokenSecret);
+    decodedData = jwtHelpers.verifyToken(
+      token,
+      config.jwt.refresh_token_secret as Secret
+    );
+    // console.log(decodedData);
   } catch (error) {
     throw new Error("Invalid refresh token");
   }
@@ -61,8 +64,8 @@ const refreshToken = async (token: string) => {
 
   const newAccessToken = jwtHelpers.generateToken(
     { email: userData.email, role: userData.role },
-    accessTokenSecret,
-    "5m"
+    config.jwt.access_token_secret as Secret,
+    config.jwt.access_token_secret_expires_in as string
   );
 
   return {
